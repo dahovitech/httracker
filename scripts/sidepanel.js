@@ -457,7 +457,7 @@ function renderHistory(history) {
 /**
  * Re-télécharge un site
  */
-window.redownload = function(url) {
+window.redownload = function (url) {
   elements.urlInput.value = url;
   switchTab('download');
 };
@@ -465,7 +465,7 @@ window.redownload = function(url) {
 /**
  * Supprime un élément de l'historique
  */
-window.deleteHistoryItem = async function(id) {
+window.deleteHistoryItem = async function (id) {
   chrome.runtime.sendMessage({ action: 'getHistory' }, async history => {
     const filtered = history.filter(item => item.id !== id);
     chrome.storage.local.set({ history: filtered }, () => {
@@ -545,7 +545,7 @@ async function loadSettings() {
         elements.requestDelay.value = settings.requestDelay || 100;
         elements.requestTimeout.value = settings.requestTimeout / 1000 || 30;
         elements.maxFileSize.value = settings.maxFileSize / (1024 * 1024) || 50;
-        elements.includeCookies.checked = settings.includeCookies || false;
+        elements.includeCookies.checked = settings.includeCookies !== false;
         elements.verboseLogs.checked = settings.verboseLogs || false;
 
         const format = settings.exportFormat || 'zip';
@@ -597,11 +597,11 @@ function saveSettings() {
  */
 function resetSettings() {
   const defaults = {
-    respectRobots: true,
+    respectRobots: false,
     requestDelay: 100,
     requestTimeout: 30000,
     maxFileSize: 50 * 1024 * 1024,
-    includeCookies: false,
+    includeCookies: true,
     verboseLogs: false,
     exportFormat: 'zip'
   };
@@ -634,8 +634,8 @@ function showNotification(message, type = 'info') {
   toast.innerHTML = `
     <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
       ${type === 'success'
-        ? '<path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2"/><polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" stroke-width="2"/>'
-        : '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2"/>'}
+      ? '<path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2"/><polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" stroke-width="2"/>'
+      : '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2"/>'}
     </svg>
     <span>${message}</span>
   `;

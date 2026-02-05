@@ -133,7 +133,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## Auteur
 
-Développé par **Matrix Agent**
+Développé par **@jprud67**
 
 ---
 

@@ -22,11 +22,11 @@ let downloadState = {
     depth: 2,
     parallel: 5,
     resourceTypes: ['html', 'css', 'js', 'images'],
-    respectRobots: true,
+    respectRobots: false,
     requestDelay: 100,
     requestTimeout: 30000,
     maxFileSize: 50 * 1024 * 1024,
-    includeCookies: false,
+    includeCookies: true,
     exportFormat: 'zip'
   }
 };
@@ -246,9 +246,9 @@ async function processResource(item, baseUrl) {
   // Récupérer le contenu
   let content;
   const isText = contentType.includes('text') ||
-                 contentType.includes('javascript') ||
-                 contentType.includes('json') ||
-                 contentType.includes('xml');
+    contentType.includes('javascript') ||
+    contentType.includes('json') ||
+    contentType.includes('xml');
 
   if (isText) {
     content = await response.text();
@@ -341,7 +341,7 @@ function extractResources(html, pageUrl, baseUrl) {
       if (url) {
         try {
           resources.push({ url: new URL(url, pageUrl).href, type: 'css' });
-        } catch {}
+        } catch { }
       }
     }
 
@@ -360,7 +360,7 @@ function extractResources(html, pageUrl, baseUrl) {
     while ((match = jsRegex.exec(html)) !== null) {
       try {
         resources.push({ url: new URL(match[1], pageUrl).href, type: 'js' });
-      } catch {}
+      } catch { }
     }
   }
 
@@ -371,7 +371,7 @@ function extractResources(html, pageUrl, baseUrl) {
     while ((match = imgRegex.exec(html)) !== null) {
       try {
         resources.push({ url: new URL(match[1], pageUrl).href, type: 'image' });
-      } catch {}
+      } catch { }
     }
 
     // srcset
@@ -383,7 +383,7 @@ function extractResources(html, pageUrl, baseUrl) {
         if (url) {
           try {
             resources.push({ url: new URL(url, pageUrl).href, type: 'image' });
-          } catch {}
+          } catch { }
         }
       });
     }
@@ -396,7 +396,7 @@ function extractResources(html, pageUrl, baseUrl) {
         if (isImageUrl(url)) {
           resources.push({ url, type: 'image' });
         }
-      } catch {}
+      } catch { }
     }
   }
 
@@ -407,7 +407,7 @@ function extractResources(html, pageUrl, baseUrl) {
     while ((match = fontRegex.exec(html)) !== null) {
       try {
         resources.push({ url: new URL(match[1], pageUrl).href, type: 'font' });
-      } catch {}
+      } catch { }
     }
   }
 
@@ -440,7 +440,7 @@ function extractCSSResources(css, cssUrl, baseUrl) {
       } else if (isFontUrl(absoluteUrl) && settings.resourceTypes.includes('fonts')) {
         resources.push({ url: absoluteUrl, type: 'font' });
       }
-    } catch {}
+    } catch { }
   }
 
   return resources;
@@ -457,7 +457,7 @@ function extractCSSImports(css, baseUrl) {
   while ((match = importRegex.exec(css)) !== null) {
     try {
       imports.push(new URL(match[1], baseUrl).href);
-    } catch {}
+    } catch { }
   }
 
   return imports;
@@ -469,8 +469,8 @@ function extractCSSImports(css, baseUrl) {
 function addToQueue(urls, depth) {
   urls.forEach(url => {
     if (!downloadState.downloaded.has(url) &&
-        !downloadState.failed.has(url) &&
-        !downloadState.queue.some(item => item.url === url)) {
+      !downloadState.failed.has(url) &&
+      !downloadState.queue.some(item => item.url === url)) {
       downloadState.queue.push({ url, depth, type: 'html' });
       downloadState.stats.totalFiles++;
     }
@@ -483,8 +483,8 @@ function addToQueue(urls, depth) {
 function addResourcesToQueue(resources) {
   resources.forEach(({ url, type }) => {
     if (!downloadState.downloaded.has(url) &&
-        !downloadState.failed.has(url) &&
-        !downloadState.queue.some(item => item.url === url)) {
+      !downloadState.failed.has(url) &&
+      !downloadState.queue.some(item => item.url === url)) {
       downloadState.queue.push({ url, depth: 0, type });
       downloadState.stats.totalFiles++;
     }
@@ -613,13 +613,13 @@ function rewriteUrls() {
           try {
             const parsedUrl = new URL(url);
             if (parsedUrl.hostname === baseUrl.hostname ||
-                downloadState.downloaded.has(url)) {
+              downloadState.downloaded.has(url)) {
               const relativePath = urlToPath(url, baseUrl);
               const currentDepth = (path.match(/\//g) || []).length;
               const prefix = '../'.repeat(currentDepth);
               return match.replace(url, prefix + relativePath);
             }
-          } catch {}
+          } catch { }
           return match;
         });
       });
@@ -668,13 +668,29 @@ async function generateAndDownloadZip() {
  * Génère et télécharge le fichier MHTML
  */
 async function generateAndDownloadMHTML() {
+  // Vérifier si l'API pageCapture est disponible
+  if (!chrome.pageCapture || !chrome.pageCapture.saveAsMHTML) {
+    console.warn('API pageCapture non disponible, fallback vers ZIP');
+    await generateAndDownloadZip();
+    return;
+  }
+
   // Obtenir l'onglet actif
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tabs[0]) return;
+  if (!tabs[0]) {
+    await generateAndDownloadZip();
+    return;
+  }
 
   try {
     // Utiliser l'API pageCapture pour générer le MHTML
     chrome.pageCapture.saveAsMHTML({ tabId: tabs[0].id }, (mhtmlData) => {
+      if (chrome.runtime.lastError) {
+        console.error('Erreur pageCapture:', chrome.runtime.lastError);
+        generateAndDownloadZip();
+        return;
+      }
+
       if (mhtmlData) {
         const hostname = new URL(downloadState.currentUrl).hostname;
         const filename = `${hostname}_${formatDate(new Date())}.mhtml`;
@@ -685,6 +701,8 @@ async function generateAndDownloadMHTML() {
           filename: filename,
           saveAs: true
         });
+      } else {
+        generateAndDownloadZip();
       }
     });
   } catch (error) {
@@ -728,7 +746,7 @@ async function updateGlobalStats() {
     totalFiles: 0,
     totalSize: 0,
     byType: { html: 0, css: 0, js: 0, images: 0, other: 0 }
-  }} = await chrome.storage.local.get('globalStats');
+  } } = await chrome.storage.local.get('globalStats');
 
   globalStats.totalDownloads++;
   globalStats.totalFiles += downloadState.stats.downloadedFiles;
@@ -800,26 +818,125 @@ async function getStats() {
     totalFiles: 0,
     totalSize: 0,
     byType: { html: 0, css: 0, js: 0, images: 0, other: 0 }
-  }} = await chrome.storage.local.get('globalStats');
+  } } = await chrome.storage.local.get('globalStats');
   return globalStats;
 }
 
 /**
- * Télécharge une ressource avec timeout
+ * Liste de User-Agents pour rotation (contournement anti-bot)
  */
-async function fetchWithTimeout(url, timeout) {
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+];
+
+/**
+ * Obtient un User-Agent aléatoire
+ */
+function getRandomUserAgent() {
+  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
+/**
+ * Génère un délai aléatoire pour éviter la détection
+ */
+function getRandomDelay(base = 100) {
+  return base + Math.random() * 200;
+}
+
+/**
+ * Télécharge une ressource avec contournement des blocages
+ */
+async function fetchWithTimeout(url, timeout, retryCount = 0) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const maxRetries = 3;
 
   try {
-    const response = await fetch(url, {
+    // En-têtes pour imiter un vrai navigateur
+    const fetchOptions = {
       signal: controller.signal,
-      credentials: downloadState.settings.includeCookies ? 'include' : 'omit'
-    });
+      credentials: 'include',
+      mode: 'cors',
+      cache: 'no-cache',
+      redirect: 'follow',
+      headers: {
+        'User-Agent': getRandomUserAgent(),
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Cache-Control': 'max-age=0'
+      }
+    };
+
+    // Ajouter le Referer pour paraître plus légitime
+    if (downloadState.currentUrl) {
+      try {
+        const baseUrl = new URL(downloadState.currentUrl);
+        fetchOptions.headers['Referer'] = baseUrl.origin + '/';
+        fetchOptions.headers['Origin'] = baseUrl.origin;
+      } catch (e) { }
+    }
+
+    // Récupérer et ajouter les cookies pour session authentifiée
+    if (downloadState.settings.includeCookies) {
+      try {
+        const urlObj = new URL(url);
+        const cookies = await chrome.cookies.getAll({ domain: urlObj.hostname });
+        if (cookies && cookies.length > 0) {
+          const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+          fetchOptions.headers['Cookie'] = cookieString;
+        }
+      } catch (cookieError) {
+        // Ignorer les erreurs de cookies
+      }
+    }
+
+    // Délai aléatoire avant la requête pour éviter la détection
+    if (retryCount > 0) {
+      await sleep(getRandomDelay(500 * retryCount));
+    }
+
+    const response = await fetch(url, fetchOptions);
     clearTimeout(timeoutId);
+
+    // Gérer les codes de réponse spéciaux
+    if (response.status === 429 || response.status === 503) {
+      // Rate limited ou service unavailable - réessayer
+      if (retryCount < maxRetries) {
+        await sleep(2000 * (retryCount + 1)); // Attente exponentielle
+        return fetchWithTimeout(url, timeout, retryCount + 1);
+      }
+    }
+
+    if (response.status === 403 || response.status === 401) {
+      // Accès interdit - essayer sans certains headers
+      if (retryCount < maxRetries) {
+        await sleep(1000);
+        return fetchWithTimeout(url, timeout, retryCount + 1);
+      }
+    }
+
     return response;
   } catch (error) {
     clearTimeout(timeoutId);
+
+    // Réessayer en cas d'erreur réseau
+    if (retryCount < maxRetries && !error.message.includes('abort')) {
+      await sleep(1000 * (retryCount + 1));
+      return fetchWithTimeout(url, timeout, retryCount + 1);
+    }
+
     throw error;
   }
 }
@@ -903,4 +1020,4 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Installer le side panel
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => { });
