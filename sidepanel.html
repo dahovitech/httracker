@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTracker</title>
+  <link rel="stylesheet" href="styles/sidepanel.css">
+</head>
+<body>
+  <div class="app" data-theme="dark">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">HTTracker</span>
+        <span class="version-badge">Premium</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Changer le thème">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="download">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Télécharger</span>
+      </button>
+      <button class="tab" data-tab="history">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Historique</span>
+      </button>
+      <button class="tab" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>Options</span>
+      </button>
+      <button class="tab" data-tab="stats">
+        <svg viewBox="0 0 24 24" fill="none">
+          <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Stats</span>
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Download Tab -->
+      <section class="tab-content active" id="tab-download">
+        <div class="current-page-card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>Page actuelle</span>
+          </div>
+          <div class="current-url" id="currentUrl">Chargement...</div>
+          <div class="page-info">
+            <span class="info-badge" id="pageTitle">-</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="urlInput">URL à télécharger</label>
+          <div class="input-wrapper">
+            <input type="url" id="urlInput" placeholder="https://example.com" autocomplete="off">
+            <button class="btn-icon" id="useCurrentUrl" title="Utiliser l'URL actuelle">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="options-quick">
+          <div class="option-row">
+            <label>Profondeur de crawl</label>
+            <div class="stepper">
+              <button class="stepper-btn" id="depthMinus">-</button>
+              <span class="stepper-value" id="depthValue">2</span>
+              <button class="stepper-btn" id="depthPlus">+</button>
+            </div>
+          </div>
+          <div class="option-row">
+            <label>Téléchargements parallèles</label>
+            <div class="stepper">
+              <button class="stepper-btn" id="parallelMinus">-</button>
+              <span class="stepper-value" id="parallelValue">5</span>
+              <button class="stepper-btn" id="parallelPlus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="resource-filters">
+          <label>Types de ressources</label>
+          <div class="filter-chips">
+            <label class="chip active">
+              <input type="checkbox" name="resource" value="html" checked>
+              <span>HTML</span>
+            </label>
+            <label class="chip active">
+              <input type="checkbox" name="resource" value="css" checked>
+              <span>CSS</span>
+            </label>
+            <label class="chip active">
+              <input type="checkbox" name="resource" value="js" checked>
+              <span>JS</span>
+            </label>
+            <label class="chip active">
+              <input type="checkbox" name="resource" value="images" checked>
+              <span>Images</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="resource" value="fonts">
+              <span>Fonts</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="resource" value="videos">
+              <span>Vidéos</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="resource" value="audio">
+              <span>Audio</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="startDownload">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Démarrer le téléchargement</span>
+        </button>
+
+        <!-- Progress Section (Hidden by default) -->
+        <div class="progress-section hidden" id="progressSection">
+          <div class="progress-header">
+            <span class="progress-title">Téléchargement en cours...</span>
+            <button class="btn-cancel" id="cancelDownload">
+              <svg viewBox="0 0 24 24" fill="none">
+                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+
+          <div class="progress-stats">
+            <div class="stat">
+              <span class="stat-value" id="progressPercent">0%</span>
+              <span class="stat-label">Progression</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value" id="filesDownloaded">0</span>
+              <span class="stat-label">Fichiers</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value" id="totalSize">0 KB</span>
+              <span class="stat-label">Taille</span>
+            </div>
+          </div>
+
+          <div class="progress-log" id="progressLog">
+            <div class="log-entry">Initialisation...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Tab -->
+      <section class="tab-content" id="tab-history">
+        <div class="section-header">
+          <h2>Historique des téléchargements</h2>
+          <button class="btn-icon-small" id="clearHistory" title="Effacer l'historique">
+            <svg viewBox="0 0 24 24" fill="none">
+              <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p>Aucun téléchargement</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Tab -->
+      <section class="tab-content" id="tab-settings">
+        <div class="settings-group">
+          <h3>Paramètres de téléchargement</h3>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Respecter robots.txt</label>
+              <p>Suivre les règles de crawl des sites</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="respectRobots" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Délai entre requêtes (ms)</label>
+              <p>Évite de surcharger les serveurs</p>
+            </div>
+            <input type="number" class="input-small" id="requestDelay" value="100" min="0" max="5000">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Timeout par requête (s)</label>
+              <p>Temps max d'attente par fichier</p>
+            </div>
+            <input type="number" class="input-small" id="requestTimeout" value="30" min="5" max="120">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Taille max fichier (MB)</label>
+              <p>Ignorer les fichiers plus gros</p>
+            </div>
+            <input type="number" class="input-small" id="maxFileSize" value="50" min="1" max="500">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Format d'export</h3>
+
+          <div class="export-options">
+            <label class="radio-card active">
+              <input type="radio" name="exportFormat" value="zip" checked>
+              <div class="radio-content">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>ZIP</span>
+              </div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="exportFormat" value="mhtml">
+              <div class="radio-content">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>MHTML</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Avancé</h3>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Inclure les cookies</label>
+              <p>Pour sites avec authentification</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="includeCookies">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Logs détaillés</label>
+              <p>Afficher tous les détails de crawl</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="verboseLogs">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-secondary" id="resetSettings">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Réinitialiser les paramètres</span>
+        </button>
+      </section>
+
+      <!-- Stats Tab -->
+      <section class="tab-content" id="tab-stats">
+        <div class="stats-overview">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="stat-data">
+              <span class="stat-number" id="totalDownloads">0</span>
+              <span class="stat-label">Sites téléchargés</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="stat-data">
+              <span class="stat-number" id="totalFiles">0</span>
+              <span class="stat-label">Fichiers récupérés</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="stat-data">
+              <span class="stat-number" id="totalSizeStats">0 MB</span>
+              <span class="stat-label">Données totales</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <h3>Répartition par type</h3>
+          <div class="chart-container" id="typeChart">
+            <div class="chart-bar-group">
+              <div class="chart-bar-row">
+                <span class="chart-label">HTML</span>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar" data-type="html" style="width: 0%"></div>
+                </div>
+                <span class="chart-value" id="htmlCount">0</span>
+              </div>
+              <div class="chart-bar-row">
+                <span class="chart-label">CSS</span>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar" data-type="css" style="width: 0%"></div>
+                </div>
+                <span class="chart-value" id="cssCount">0</span>
+              </div>
+              <div class="chart-bar-row">
+                <span class="chart-label">JS</span>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar" data-type="js" style="width: 0%"></div>
+                </div>
+                <span class="chart-value" id="jsCount">0</span>
+              </div>
+              <div class="chart-bar-row">
+                <span class="chart-label">Images</span>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar" data-type="images" style="width: 0%"></div>
+                </div>
+                <span class="chart-value" id="imagesCount">0</span>
+              </div>
+              <div class="chart-bar-row">
+                <span class="chart-label">Autres</span>
+                <div class="chart-bar-bg">
+                  <div class="chart-bar" data-type="other" style="width: 0%"></div>
+                </div>
+                <span class="chart-value" id="otherCount">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-secondary" id="exportStats">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2"/>
+            <polyline points="17,8 12,3 7,8" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>Exporter les statistiques</span>
+        </button>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>HTTracker v1.0.0</span>
+      <span class="separator">|</span>
+      <span>Premium Edition</span>
+    </footer>
+  </div>
+
+  <script src="lib/jszip.min.js"></script>
+  <script type="module" src="scripts/sidepanel.js"></script>
+</body>
+</html>
